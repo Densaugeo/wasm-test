@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <meta charset="utf-8">
+    <script> 
+      //WebAssembly.instantiateStreaming(fetch("target/wasm32-unknown-unknown/debug/wasm_test.wasm"))
+        //.then(result => console.log(result.instance.exports.add_one(2)));
+      
+      fetch("target/wasm32-unknown-unknown/debug/wasm_test.wasm")
+        .then(response => response.arrayBuffer())
+        .then(WebAssembly.instantiate)
+        .then(result => {
+          wasm = result
+          console.log(result.instance.exports.add_one(2))
+          view = new DataView(wasm.instance.exports.memory.buffer, 1048572, 4)
+          console.log('[' + view.getUint8(0) + ', ' + view.getUint8(1) + ', ' + view.getUint8(2) + ', ' + view.getUint8(3) + ']')
+        });
+    </script>
+    <script src="three.min.js"></script>
+  <head>
+  <body></body>
+  
+<script>
+var camera, scene, renderer;
+var geometry, material, mesh, geotest;
+
+init();
+//animate();
+
+function init() {
+
+	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+	camera.position.z = 1;
+
+	scene = new THREE.Scene();
+
+	geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
+  geotest = new THREE.Geometry();
+  console.log(geometry.vertices);
+  console.log(geometry.faces);
+  geotest.vertices = [
+    { x:  0.1, y:  0.1, z:  0.1 },
+    { x:  0.1, y:  0.1, z: -0.1 },
+    { x:  0.1, y: -0.1, z:  0.1 },
+    { x:  0.1, y: -0.1, z: -0.1 },
+    { x: -0.1, y:  0.1, z: -0.1 },
+    { x: -0.1, y:  0.1, z:  0.1 },
+    { x: -0.1, y: -0.1, z: -0.1 },
+    { x: -0.1, y: -0.1, z:  0.1 }
+  ];
+  geotest.faces = [
+    { a: 0, b: 2, c: 1, color: new THREE.Color(), normal: { x:  1, y:  0, z:  0 }, vertexColors: [], vertexNormals: []},
+    { a: 2, b: 3, c: 1, color: new THREE.Color(), normal: { x:  1, y:  0, z:  0 }, vertexColors: [], vertexNormals: []},
+    { a: 4, b: 6, c: 5, color: new THREE.Color(), normal: { x: -1, y:  0, z:  0 }, vertexColors: [], vertexNormals: []},
+    { a: 6, b: 7, c: 5, color: new THREE.Color(), normal: { x: -1, y:  0, z:  0 }, vertexColors: [], vertexNormals: []},
+    { a: 4, b: 5, c: 1, color: new THREE.Color(), normal: { x:  0, y:  1, z:  0 }, vertexColors: [], vertexNormals: []},
+    { a: 5, b: 0, c: 1, color: new THREE.Color(), normal: { x:  0, y:  1, z:  0 }, vertexColors: [], vertexNormals: []},
+    { a: 7, b: 6, c: 2, color: new THREE.Color(), normal: { x:  0, y: -1, z:  0 }, vertexColors: [], vertexNormals: []},
+    { a: 6, b: 3, c: 2, color: new THREE.Color(), normal: { x:  0, y: -1, z:  0 }, vertexColors: [], vertexNormals: []},
+    { a: 5, b: 7, c: 0, color: new THREE.Color(), normal: { x:  0, y:  0, z:  1 }, vertexColors: [], vertexNormals: []},
+    { a: 7, b: 2, c: 0, color: new THREE.Color(), normal: { x:  0, y:  0, z:  1 }, vertexColors: [], vertexNormals: []},
+    { a: 1, b: 3, c: 4, color: new THREE.Color(), normal: { x:  0, y:  0, z: -1 }, vertexColors: [], vertexNormals: []},
+    { a: 3, b: 6, c: 4, color: new THREE.Color(), normal: { x:  0, y:  0, z: -1 }, vertexColors: [], vertexNormals: []}
+  ];
+  geotest.computeBoundingSphere();
+  
+	material = new THREE.MeshNormalMaterial();
+
+	mesh = new THREE.Mesh( geotest, material );
+	scene.add( mesh );
+
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	document.body.appendChild( renderer.domElement );
+
+}
+
+function animate() {
+
+	requestAnimationFrame( animate );
+
+	mesh.rotation.x += 0.01;
+	mesh.rotation.y += 0.02;
+
+	renderer.render( scene, camera );
+
+}
+</script>
+<html>
